@@ -1,0 +1,49 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug API",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "ts-node-dev",
+            "runtimeArgs": ["--respawn"],
+            "args": ["${workspaceFolder}/packages/api/src/index.ts"],
+            "cwd": "${workspaceFolder}/packages/api",
+            "env": {
+                "NODE_ENV": "development"
+            },
+            "console": "integratedTerminal",
+            "skipFiles": ["<node_internals>/**"]
+        },
+        {
+            "name": "Debug MCP",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "ts-node-dev",
+            "runtimeArgs": ["--respawn"],
+            "args": ["${workspaceFolder}/packages/mcp/src/index.ts"],
+            "cwd": "${workspaceFolder}/packages/mcp",
+            "env": {
+                "NODE_ENV": "development"
+            },
+            "console": "integratedTerminal",
+            "skipFiles": ["<node_internals>/**"]
+        },
+        {
+            "name": "Attach to API",
+            "type": "node",
+            "request": "attach",
+            "port": 9229,
+            "restart": true,
+            "skipFiles": ["<node_internals>/**"]
+        },
+        {
+            "name": "Attach to MCP",
+            "type": "node",
+            "request": "attach",
+            "port": 9230,
+            "restart": true,
+            "skipFiles": ["<node_internals>/**"]
+        }
+    ]
+}

@@ -1,0 +1,10 @@
+{
+    "name": "bookshelf",
+    "private": true,
+    "scripts": {
+        "dev": "pnpm --parallel -r dev"
+    },
+    "workspaces": [
+        "packages/*"
+    ]
+}

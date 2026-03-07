@@ -1,0 +1,26 @@
+{
+    "name": "mcp",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "dev": "ts-node-dev --respawn --inspect=9230 src/index.ts",
+        "build": "tsc"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "packageManager": "pnpm@10.30.3",
+    "dependencies": {
+        "@bookshelf/shared": "workspace:*",
+        "@modelcontextprotocol/sdk": "^1.27.1",
+        "axios": "^1.13.6",
+        "zod": "^4.3.6"
+    },
+    "devDependencies": {
+        "@types/node": "^25.3.3",
+        "ts-node-dev": "^2.0.0",
+        "typescript": "^5.9.3"
+    }
+}
