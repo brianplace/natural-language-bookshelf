@@ -1,65 +1,87 @@
 import 'dotenv/config';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import { z } from 'zod';
+import http from 'http';
 import { apiCall, setToken } from './api';
-import { registerLoginTool } from './tools/Auth/loginTool';
-import { registerNewAccountTool } from './tools/Auth/newAccountTool';
-import { registerSearchBooksTool } from './tools/Books/searchBooksTool';
-import { registerSaveBookTool } from './tools/Books/saveBookTool';
-import { registerCreateShelfTool } from './tools/Shelves/createShelfTool';
-import { registerListShelvesTool } from './tools/Shelves/listShelvesTool';
-import { registerRenameShelfTool } from './tools/Shelves/renameShelfTool';
-import { registerDeleteShelfTool } from './tools/Shelves/deleteShelfTool';
-import { registerAddBookToShelfTool } from './tools/Shelves/addBookToShelfTool';
-import { registerRemoveBookFromShelfTool } from './tools/Shelves/removeBookFromShelfTool';
-import { registerMoveBookTool } from './tools/Shelves/moveBookTool';
-import { registerMarkAsLentTool } from './tools/Shelves/markAsLentTool';
-import { registerMarkAsReturnedTool } from './tools/Shelves/markAsReturnedTool';
-import { registerListLentBooksTool } from './tools/Shelves/listLentBooksTool';
-import { registerPublishShelfAsTemplateTool } from './tools/Templates/publishShelfAsTemplateTool';
-import { registerSearchTemplatesTool } from './tools/Templates/searchTemplatesTool';
-import { registerCloneTemplateTool } from './tools/Templates/cloneTemplateTool';
-import { registerGetImageTool } from './tools/Images/getImageTool';
+import { registerLoginTool } from './tools/Auth/loginTool/loginTool';
+import { registerNewAccountTool } from './tools/Auth/newAccountTool/newAccountTool';
+import { registerSearchBooksTool } from './tools/Books/searchBooksTool/searchBooksTool';
+import { registerSaveBookTool } from './tools/Books/saveBookTool/saveBookTool';
+import { registerCreateShelfTool } from './tools/Shelves/createShelfTool/createShelfTool';
+import { registerListShelvesTool } from './tools/Shelves/listShelvesTool/listShelvesTool';
+import { registerRenameShelfTool } from './tools/Shelves/renameShelfTool/renameShelfTool';
+import { registerDeleteShelfTool } from './tools/Shelves/deleteShelfTool/deleteShelfTool';
+import { registerAddBookToShelfTool } from './tools/Shelves/addBookToShelfTool/addBookToShelfTool';
+import { registerRemoveBookFromShelfTool } from './tools/Shelves/removeBookFromShelfTool/removeBookFromShelfTool';
+import { registerMoveBookTool } from './tools/Shelves/moveBookTool/moveBookTool';
+import { registerMarkAsLentTool } from './tools/Shelves/markAsLentTool/markAsLentTool';
+import { registerMarkAsReturnedTool } from './tools/Shelves/markAsReturnedTool/markAsReturnedTool';
+import { registerListLentBooksTool } from './tools/Shelves/listLentBooksTool/listLentBooksTool';
+import { registerPublishShelfAsTemplateTool } from './tools/Templates/publishShelfAsTemplateTool/publishShelfAsTemplateTool';
+import { registerSearchTemplatesTool } from './tools/Templates/searchTemplatesTool/searchTemplatesTool';
+import { registerCloneTemplateTool } from './tools/Templates/cloneTemplateTool/cloneTemplateTool';
+import { registerGetImageTool } from './tools/Images/getImageTool/getImageTool';
 
-const server = new McpServer({
-    name: 'bookshelf',
-    version: '0.0.1',
-});
+const createServer = () => {
+    const server = new McpServer({
+        name: 'bookshelf',
+        version: '0.0.1',
+    });
 
-// --- Auth ---
+    // --- Auth ---
+    registerLoginTool(server);
+    registerNewAccountTool(server);
 
-registerLoginTool(server);
-registerNewAccountTool(server);
+    // --- Books ---
+    registerSearchBooksTool(server);
+    registerSaveBookTool(server);
 
-// --- Books ---
+    // --- Shelves ---
+    registerCreateShelfTool(server);
+    registerListShelvesTool(server);
+    registerRenameShelfTool(server);
+    registerDeleteShelfTool(server);
+    registerAddBookToShelfTool(server);
+    registerRemoveBookFromShelfTool(server);
+    registerMoveBookTool(server);
+    registerMarkAsLentTool(server);
+    registerMarkAsReturnedTool(server);
+    registerListLentBooksTool(server);
 
-registerSearchBooksTool(server);
-registerSaveBookTool(server);
+    // --- Templates ---
+    registerPublishShelfAsTemplateTool(server);
+    registerSearchTemplatesTool(server);
+    registerCloneTemplateTool(server);
 
-// --- Shelves ---
+    registerGetImageTool(server);
 
-registerCreateShelfTool(server);
-registerListShelvesTool(server);
-registerRenameShelfTool(server);
-registerDeleteShelfTool(server);
-registerAddBookToShelfTool(server);
-registerRemoveBookFromShelfTool(server);
-registerMoveBookTool(server);
-registerMarkAsLentTool(server);
-registerMarkAsReturnedTool(server);
-registerListLentBooksTool(server);
-
-// --- Templates ---
-
-registerPublishShelfAsTemplateTool(server);
-registerSearchTemplatesTool(server);
-registerCloneTemplateTool(server);
-
-registerGetImageTool(server);
+    return server;
+};
 
 // Start the server
-const transport = new StdioServerTransport();
-server.connect(transport).then(() => {
-    console.error('Bookshelf MCP server running');
+const transports: Record<string, SSEServerTransport> = {};
+
+const httpServer = http.createServer(async (req, res) => {
+    if (req.method === 'GET' && req.url === '/sse') {
+        const transport = new SSEServerTransport('/message', res);
+        transports[transport.sessionId] = transport;
+        res.on('close', () => delete transports[transport.sessionId]);
+        await createServer().connect(transport);
+    } else if (req.method === 'POST' && req.url?.startsWith('/message')) {
+        const url = new URL(req.url, `http://${req.headers.host}`);
+        const sessionId = url.searchParams.get('sessionId') ?? '';
+        const transport = transports[sessionId];
+        if (transport) {
+            await transport.handlePostMessage(req, res);
+        } else {
+            res.writeHead(404).end('Session not found');
+        }
+    } else {
+        res.writeHead(404).end();
+    }
+});
+
+httpServer.listen(3100, '0.0.0.0', () => {
+    console.error('Bookshelf MCP server running on port 3100');
 });
