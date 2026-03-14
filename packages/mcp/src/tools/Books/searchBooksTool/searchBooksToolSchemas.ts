@@ -1,7 +1,9 @@
 import z from 'zod';
 
 export const searchBooksInputSchema = {
-    query: z.string().describe('The search query to find books by title, author, or keyword'),
+    // query: z.string().describe('The search query to find books by title, author, or keyword'),
+    title: z.string().optional().describe('The title of the book being searched'),
+    author: z.string().optional().describe('The name of the author being searched')
 };
 
 export const searchBooksOutputSchema = z.object({
@@ -13,7 +15,8 @@ export const searchBooksOutputSchema = z.object({
     ).describe(''),
 });
 
-export type SearchBooksInput = { query: string };
+// export type SearchBooksInput = { query: string };
+export type SearchBooksInput = z.infer<typeof searchBooksInputSchema>;
 export type SearchBooksOutput = z.infer<typeof searchBooksOutputSchema>;
 
 export interface TextResult {

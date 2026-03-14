@@ -28,8 +28,10 @@ const getCover = async (imageUrl: string) => {
     }
 };
 
-async function searchBooksHandler({ query }: SearchBooksInput): Promise<SearchBooksOutput> {
-    const res = await apiCall('get', `/books/search?q=${encodeURIComponent(query)}`);
+async function searchBooksHandler(input: SearchBooksInput): Promise<SearchBooksOutput> {
+    // const res = await apiCall('get', `/books/search?q=${encodeURIComponent(query)}`);
+    console.error('Debug', input);
+    const res = await apiCall('get', '/books/search', input);
 
     const books = res.data;
 

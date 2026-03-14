@@ -1,7 +1,6 @@
 import 'dotenv/config';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
-import { z } from 'zod';
+import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import http from 'http';
 import { apiCall, setToken } from './api';
 import { registerLoginTool } from './tools/Auth/loginTool/loginTool';
@@ -60,23 +59,11 @@ const createServer = () => {
 };
 
 // Start the server
-const transports: Record<string, SSEServerTransport> = {};
-
 const httpServer = http.createServer(async (req, res) => {
-    if (req.method === 'GET' && req.url === '/sse') {
-        const transport = new SSEServerTransport('/message', res);
-        transports[transport.sessionId] = transport;
-        res.on('close', () => delete transports[transport.sessionId]);
+    if (req.url === '/mcp') {
+        const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
         await createServer().connect(transport);
-    } else if (req.method === 'POST' && req.url?.startsWith('/message')) {
-        const url = new URL(req.url, `http://${req.headers.host}`);
-        const sessionId = url.searchParams.get('sessionId') ?? '';
-        const transport = transports[sessionId];
-        if (transport) {
-            await transport.handlePostMessage(req, res);
-        } else {
-            res.writeHead(404).end('Session not found');
-        }
+        await transport.handleRequest(req, res);
     } else {
         res.writeHead(404).end();
     }
