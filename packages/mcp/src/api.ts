@@ -17,7 +17,7 @@ export async function apiCall(
     path: string,
     data?: any,
 ) {
-    const maxRetries = 5;
+    const maxRetries = 12;
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
         try {
             const response = await axios({
@@ -31,7 +31,7 @@ export async function apiCall(
             const status = err.response?.status;
             const isWakingUp = status === 429 || status === 503 || !status; // no status = connection refused/timeout
             if (attempt < maxRetries && isWakingUp) {
-                await new Promise(resolve => setTimeout(resolve, 5000));
+                await new Promise(resolve => setTimeout(resolve, 10000));
                 continue;
             }
             throw err;
