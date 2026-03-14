@@ -13,4 +13,4 @@ jobs:
         run: curl --fail ${{ secrets.NEXT_PUBLIC_API_URL }}/health
 
       - name: Ping MCP
-        run: curl --fail ${{ secrets.MCP_URL }}/mcp
+        run: curl --fail ${{ secrets.MCP_URL }}/health
