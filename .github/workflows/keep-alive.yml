@@ -1,0 +1,15 @@
+name: Keep Alive
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping API
+        run: curl --fail ${{ secrets.NEXT_PUBLIC_API_URL }}/health
+
+      - name: Ping MCP
+        run: curl --fail ${{ secrets.MCP_URL }}/mcp

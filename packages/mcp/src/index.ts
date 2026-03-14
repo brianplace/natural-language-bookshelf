@@ -60,7 +60,9 @@ const createServer = () => {
 
 // Start the server
 const httpServer = http.createServer(async (req, res) => {
-    if (req.url === '/mcp') {
+    if (req.url === '/health') {
+        res.writeHead(200, { 'Content-Type': 'application/json' }).end(JSON.stringify({ status: 'ok' }));
+    } else if (req.url === '/mcp') {
         const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
         await createServer().connect(transport);
         await transport.handleRequest(req, res);
