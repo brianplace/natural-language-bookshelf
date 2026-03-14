@@ -28,6 +28,14 @@ export async function apiCall(
             });
             return response.data;
         } catch (err: any) {
+            if (attempt === 0) {
+                try {
+                    await axios({ method: 'get', url: API_URL });
+                } catch {
+                    // expected to fail if service is cold — ignore
+                }
+            }
+
             const status = err.response?.status;
             const isWakingUp = status === 429 || status === 503 || !status; // no status = connection refused/timeout
             if (attempt < maxRetries && isWakingUp) {
