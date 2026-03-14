@@ -69,7 +69,7 @@ const httpServer = http.createServer(async (req, res) => {
     }
 });
 
-const PORT = process.env.PORT || 3100;
+const PORT = Number(process.env.PORT) || 3100;
 httpServer.listen(PORT, '0.0.0.0', () => {
     console.error(`Bookshelf MCP server running on port ${PORT}`);
 });
