@@ -21,6 +21,9 @@ jobs:
 
       - run: pnpm install
 
+      - name: Generate Prisma client
+        run: pnpm --filter @bookshelf/api exec prisma generate
+
       - name: Build API
         run: pnpm --filter @bookshelf/api run build
 
