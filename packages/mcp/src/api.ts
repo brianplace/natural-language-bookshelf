@@ -22,6 +22,7 @@ export async function apiCall(
         url: `${API_URL}${path}`,
         data,
         headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
+        validateStatus: () => true,
     });
     return response.data;
 }
