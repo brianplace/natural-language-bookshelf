@@ -4,7 +4,7 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
 import http from 'http';
 import { apiCall, setToken } from './api';
 import { registerLoginTool } from './tools/Auth/loginTool/loginTool';
-import { registerNewAccountTool } from './tools/Auth/newAccountTool/newAccountTool';
+import { registerCreateNewAccountTool } from './tools/Auth/newAccountTool/createNewAccountTool';
 import { registerSearchBooksTool } from './tools/Books/searchBooksTool/searchBooksTool';
 import { registerSaveBookTool } from './tools/Books/saveBookTool/saveBookTool';
 import { registerCreateShelfTool } from './tools/Shelves/createShelfTool/createShelfTool';
@@ -21,6 +21,7 @@ import { registerPublishShelfAsTemplateTool } from './tools/Templates/publishShe
 import { registerSearchTemplatesTool } from './tools/Templates/searchTemplatesTool/searchTemplatesTool';
 import { registerCloneTemplateTool } from './tools/Templates/cloneTemplateTool/cloneTemplateTool';
 import { registerGetImageTool } from './tools/Images/getImageTool/getImageTool';
+import { registerSearchBooksGlobalTool } from './tools/Books/searchBooksGlobalTool/searchBooksGlobalTool';
 
 const createServer = () => {
     const server = new McpServer({
@@ -30,10 +31,11 @@ const createServer = () => {
 
     // --- Auth ---
     registerLoginTool(server);
-    registerNewAccountTool(server);
+    registerCreateNewAccountTool(server);
 
     // --- Books ---
     registerSearchBooksTool(server);
+    registerSearchBooksGlobalTool(server);
     registerSaveBookTool(server);
 
     // --- Shelves ---
