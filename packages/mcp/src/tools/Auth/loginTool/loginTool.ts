@@ -15,7 +15,7 @@ export const registerLoginTool = (server: McpServer) => {
         'Login',
         {
             title: 'Login',
-            description: 'Login to your bookshelf account',
+            description: 'Login to your bookshelf account; if login fails because the username/password don\'t exist, user can create an account through the createNewAccountTool',
             inputSchema: loginInputSchema,
         },
         loginHandler,

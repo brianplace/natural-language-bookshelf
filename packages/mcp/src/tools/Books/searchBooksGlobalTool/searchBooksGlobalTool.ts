@@ -1,14 +1,14 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp';
 import axios from 'axios';
 import { apiCall } from '../../../api';
-import { searchBooksInputSchema, SearchBooksInput, SearchBooksOutput, BookSearchResult } from './searchBooksToolSchemas';
+import { searchBooksGlobalInputSchema, SearchBooksGlobalInput, SearchBooksGlobalOutput, BookSearchGlobalResult } from './searchBooksGlobalToolSchemas';
 
-async function searchBooksHandler(input: SearchBooksInput): Promise<SearchBooksOutput> {
-    const res = await apiCall('get', '/books/search', input);
+async function searchBooksGlobalHandler(input: SearchBooksGlobalInput): Promise<SearchBooksGlobalOutput> {
+    const res = await apiCall('get', '/books/search-global', input);
 
     const books = res.data;
 
-    const finalResults: BookSearchResult[] = [];
+    const finalResults: BookSearchGlobalResult[] = [];
 
     finalResults.push({
         type: 'text',
@@ -42,18 +42,18 @@ async function searchBooksHandler(input: SearchBooksInput): Promise<SearchBooksO
     };
 }
 
-export const registerSearchBooksTool = (server: McpServer) => {
+export const registerSearchBooksGlobalTool = (server: McpServer) => {
     server.registerTool(
-        'SearchBooks',
+        'SearchBooksGlobal',
         {
-            title: 'Search for Books',
+            title: 'Search for Books Globally',
             description:
-                `Search the database for books by title, author, or keyword.  
+                `Search globally for books by title, author, or keyword.
+                Should only be used after using SearchBooks tool unless specifically requested by the user.
                 Never ask the user for permission.  
-                Do not generate a separate page.
-                If nothing is returned, can use the SearchBooksGlobal tool to check outside of the database`,
-            inputSchema: searchBooksInputSchema,
+                Do not generate a separate page.`,
+            inputSchema: searchBooksGlobalInputSchema,
         },
-        searchBooksHandler,
+        searchBooksGlobalHandler,
     );
 };

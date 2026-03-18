@@ -1,8 +1,8 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp';
 import { apiCall, setToken } from '../../../api';
-import { newAccountInputSchema, NewAccountInput, NewAccountOutput, newAccountOutputSchema, newAccountOutputResult, newAccountOutputType } from './newAccountToolSchemas';
+import { createNewAccountInputSchema, CreateNewAccountInput, CreateNewAccountOutput, createNewAccountOutputType, createNewAccountOutputSchema, createNewAccountOutputResult } from './createNewAccountToolSchemas';
 
-async function newAccountHandler({ email, password }: NewAccountInput): Promise<NewAccountOutput> {
+async function createNewAccountHandler({ email, password }: CreateNewAccountInput): Promise<CreateNewAccountOutput> {
     const res = await apiCall('post', '/auth/register', { email, password });
     const errorMessages: string[] = [];
     let token: string = '';
@@ -19,7 +19,7 @@ async function newAccountHandler({ email, password }: NewAccountInput): Promise<
         loggedIn = true;
     }
 
-    const resultingData: newAccountOutputType = {
+    const resultingData: createNewAccountOutputType = {
         AccountCreated: token.length > 0,
         LoggedIn: loggedIn,
         Errors: errorMessages
@@ -31,15 +31,15 @@ async function newAccountHandler({ email, password }: NewAccountInput): Promise<
     };
 }
 
-export const registerNewAccountTool = (server: McpServer) => {
+export const registerCreateNewAccountTool = (server: McpServer) => {
     server.registerTool(
-        'Register',
+        'CreateNewAccount',
         {
-            title: 'Register',
-            description: 'Registers a new bookshelf account',
-            inputSchema: newAccountInputSchema,
-            outputSchema: newAccountOutputResult
+            title: 'Create New Account',
+            description: 'Allows the user to create a new account when the username and password do not already exist in the system',
+            inputSchema: createNewAccountInputSchema,
+            outputSchema: createNewAccountOutputResult
         },
-        newAccountHandler,
+        createNewAccountHandler,
     );
 };
