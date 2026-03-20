@@ -14,11 +14,12 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
+  id        String     @id @default(cuid())
+  email     String     @unique
   password  String
-  createdAt DateTime @default(now())
+  createdAt DateTime   @default(now())
   shelves   Shelf[]
+  books     UserBook[]
 }
 
 model Shelf {
@@ -41,6 +42,17 @@ model Book {
   isbn          String?
   publishedDate String?
   shelves       ShelfBook[]
+  userBooks     UserBook[]
+}
+
+model UserBook {
+  userId  String
+  bookId  String
+  user    User     @relation(fields: [userId], references: [id])
+  book    Book     @relation(fields: [bookId], references: [id])
+  addedAt DateTime @default(now())
+
+  @@id([userId, bookId])
 }
 
 model ShelfBook {

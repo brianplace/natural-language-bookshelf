@@ -83,39 +83,6 @@ router.get('/search', requireAuth, async (req: AuthRequest, res: Response) => {
     }
 });
 
-// router.get('/search', requireAuth, async (req: AuthRequest, res: Response) => {
-//     const { q } = req.query;
-
-//     if (!q || typeof q !== 'string') {
-//         res.status(400).json({ error: 'Query parameter "q" is required' });
-//         return;
-//     }
-
-//     try {
-//         const response = await axios.get(
-//             'https://openlibrary.org/search.json',
-//             {
-//                 params: { q, limit: 10 },
-//             },
-//         );
-
-//         const books = response.data.docs.map((doc: any) => ({
-//             openLibraryId: doc.key,
-//             title: doc.title,
-//             authors: doc.author_name || [],
-//             publishedDate: doc.first_publish_year?.toString(),
-//             isbn: doc.isbn?.[0],
-//             thumbnail: doc.cover_i
-//                 ? `https://covers.openlibrary.org/b/id/${doc.cover_i}-M.jpg`
-//                 : null,
-//         }));
-
-//         res.json({ data: books });
-//     } catch (error) {
-//         res.status(500).json({ error: 'Failed to search books' });
-//     }
-// });
-
 router.post('/save', requireAuth, async (req: AuthRequest, res: Response) => {
     const { openLibraryId, title, authors, publishedDate, isbn, thumbnail } =
         req.body;
@@ -142,6 +109,27 @@ router.post('/save', requireAuth, async (req: AuthRequest, res: Response) => {
         res.json({ data: book });
     } catch (error) {
         res.status(500).json({ error: 'Failed to save book' });
+    }
+});
+
+router.post('/save-collection', requireAuth, async (req: AuthRequest, res: Response) => {
+    const { bookId } = req.body;
+
+    if (!bookId) {
+        res.status(400).json({ error: 'bookId is required' });
+        return;
+    }
+
+    try {
+        const userBook = await prisma.userBook.upsert({
+            where: { userId_bookId: { userId: req.userId!, bookId } },
+            update: {},
+            create: { userId: req.userId!, bookId },
+        });
+
+        res.json({ data: userBook });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to save book to collection' });
     }
 });
 

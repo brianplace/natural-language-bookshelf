@@ -7,6 +7,8 @@ import { registerLoginTool } from './tools/Auth/loginTool/loginTool';
 import { registerCreateNewAccountTool } from './tools/Auth/newAccountTool/createNewAccountTool';
 import { registerSearchBooksTool } from './tools/Books/searchBooksTool/searchBooksTool';
 import { registerSaveBookTool } from './tools/Books/saveBookTool/saveBookTool';
+import { registerSaveBookFromGlobalTool } from './tools/Books/saveBookFromGlobalTool/saveBookFromGlobalTool';
+import { registerAddToCollectionTool } from './tools/Books/addToCollectionTool/addToCollectionTool';
 import { registerCreateShelfTool } from './tools/Shelves/createShelfTool/createShelfTool';
 import { registerListShelvesTool } from './tools/Shelves/listShelvesTool/listShelvesTool';
 import { registerRenameShelfTool } from './tools/Shelves/renameShelfTool/renameShelfTool';
@@ -26,7 +28,7 @@ import { registerSearchBooksGlobalTool } from './tools/Books/searchBooksGlobalTo
 const createServer = () => {
     const server = new McpServer({
         name: 'bookshelf',
-        version: '0.0.1',
+        version: new Date().toISOString(),
     });
 
     // --- Auth ---
@@ -37,25 +39,27 @@ const createServer = () => {
     registerSearchBooksTool(server);
     registerSearchBooksGlobalTool(server);
     registerSaveBookTool(server);
+    registerSaveBookFromGlobalTool(server);
+    registerAddToCollectionTool(server);
 
     // --- Shelves ---
-    registerCreateShelfTool(server);
-    registerListShelvesTool(server);
-    registerRenameShelfTool(server);
-    registerDeleteShelfTool(server);
-    registerAddBookToShelfTool(server);
-    registerRemoveBookFromShelfTool(server);
-    registerMoveBookTool(server);
-    registerMarkAsLentTool(server);
-    registerMarkAsReturnedTool(server);
-    registerListLentBooksTool(server);
+    // registerCreateShelfTool(server);
+    // registerListShelvesTool(server);
+    // registerRenameShelfTool(server);
+    // registerDeleteShelfTool(server);
+    // registerAddBookToShelfTool(server);
+    // registerRemoveBookFromShelfTool(server);
+    // registerMoveBookTool(server);
+    // registerMarkAsLentTool(server);
+    // registerMarkAsReturnedTool(server);
+    // registerListLentBooksTool(server);
 
-    // --- Templates ---
-    registerPublishShelfAsTemplateTool(server);
-    registerSearchTemplatesTool(server);
-    registerCloneTemplateTool(server);
+    // // --- Templates ---
+    // registerPublishShelfAsTemplateTool(server);
+    // registerSearchTemplatesTool(server);
+    // registerCloneTemplateTool(server);
 
-    registerGetImageTool(server);
+    // registerGetImageTool(server);
 
     return server;
 };
