@@ -4,7 +4,13 @@ import { apiCall } from '../../../api';
 import { searchBooksInputSchema, SearchBooksInput, SearchBooksOutput, BookSearchResult } from './searchBooksToolSchemas';
 
 async function searchBooksHandler(input: SearchBooksInput): Promise<SearchBooksOutput> {
-    const res = await apiCall('get', '/books/search', input);
+    const apiInput = {
+        title: input.title,
+        author: input.author,
+        isbn: input.isbn10 ? input.isbn10 : input.isbn13
+    };
+
+    const res = await apiCall('get', '/books/search', apiInput);
 
     const books = res.data;
 

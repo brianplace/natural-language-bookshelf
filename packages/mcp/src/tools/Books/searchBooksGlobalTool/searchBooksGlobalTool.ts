@@ -4,7 +4,13 @@ import { apiCall } from '../../../api';
 import { searchBooksGlobalInputSchema, SearchBooksGlobalInput, SearchBooksGlobalOutput, BookSearchGlobalResult } from './searchBooksGlobalToolSchemas';
 
 async function searchBooksGlobalHandler(input: SearchBooksGlobalInput): Promise<SearchBooksGlobalOutput> {
-    const res = await apiCall('get', '/books/search-global', input);
+    const apiInput = {
+        title: input.title,
+        author: input.author,
+        isbn: input.isbn10 ? input.isbn10 : input.isbn13
+    };
+
+    const res = await apiCall('get', '/books/search-global', apiInput);
 
     const books = res.data;
 
