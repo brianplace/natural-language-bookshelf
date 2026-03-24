@@ -112,6 +112,19 @@ router.post('/save', requireAuth, async (req: AuthRequest, res: Response) => {
     }
 });
 
+router.get('/collection', requireAuth, async (req: AuthRequest, res: Response) => {
+    try {
+        const userBooks = await prisma.userBook.findMany({
+            where: { userId: req.userId! },
+            include: { book: true },
+        });
+
+        res.json({ data: userBooks });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch collection' });
+    }
+});
+
 router.post('/save-collection', requireAuth, async (req: AuthRequest, res: Response) => {
     const { bookId } = req.body;
 

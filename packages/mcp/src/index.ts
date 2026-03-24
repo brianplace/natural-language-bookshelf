@@ -9,6 +9,7 @@ import { registerSearchBooksTool } from './tools/Books/searchBooksTool/searchBoo
 import { registerSaveBookTool } from './tools/Books/saveBookTool/saveBookTool';
 import { registerSaveBookFromGlobalTool } from './tools/Books/saveBookFromGlobalTool/saveBookFromGlobalTool';
 import { registerAddToCollectionTool } from './tools/Books/addToCollectionTool/addToCollectionTool';
+import { registerGetCollectionTool } from './tools/Books/getCollectionTool/getCollectionTool';
 import { registerCreateShelfTool } from './tools/Shelves/createShelfTool/createShelfTool';
 import { registerListShelvesTool } from './tools/Shelves/listShelvesTool/listShelvesTool';
 import { registerRenameShelfTool } from './tools/Shelves/renameShelfTool/renameShelfTool';
@@ -41,6 +42,7 @@ const createServer = () => {
     registerSaveBookTool(server);
     registerSaveBookFromGlobalTool(server);
     registerAddToCollectionTool(server);
+    registerGetCollectionTool(server);
 
     // --- Shelves ---
     // registerCreateShelfTool(server);
