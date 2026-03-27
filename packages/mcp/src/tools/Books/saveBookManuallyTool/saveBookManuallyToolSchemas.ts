@@ -1,6 +1,6 @@
 import z from 'zod';
 
-export const addToCollectionInputSchema = {
+export const saveBookManuallyInputSchema = {
     title: z.string().describe('The title of the book'),
     authors: z.array(z.string().describe('An author name')).describe('List of author names'),
     openLibraryId: z.string().optional().describe('The Open Library identifier, if known; a unique ID is generated if omitted'),
@@ -15,7 +15,7 @@ export const addToCollectionInputSchema = {
     revision: z.number().optional().describe('The revision number of the edition'),
 };
 
-export const addToCollectionOutputSchema = z.object({
+export const saveBookManuallyOutputSchema = z.object({
     content: z.array(
         z.object({
             type: z.literal('text').describe(''),
@@ -24,7 +24,7 @@ export const addToCollectionOutputSchema = z.object({
     ).describe(''),
 });
 
-export type AddToCollectionInput = {
+export type SaveBookManuallyInput = {
     title: string;
     authors: string[];
     openLibraryId?: string;
@@ -38,4 +38,4 @@ export type AddToCollectionInput = {
     type?: string;
     revision?: number;
 };
-export type AddToCollectionOutput = z.infer<typeof addToCollectionOutputSchema>;
+export type SaveBookManuallyOutput = z.infer<typeof saveBookManuallyOutputSchema>;

@@ -36,11 +36,16 @@ model Book {
   id            String      @id @default(cuid())
   openLibraryId String      @unique
   title         String
+  fullTitle     String?
   authors       String[]
   description   String?
   thumbnail     String?
-  isbn          String?
+  isbn10        String?
+  isbn13        String?
   publishedDate String?
+  format        String?
+  type          String?
+  revision      Int?
   shelves       ShelfBook[]
   userBooks     UserBook[]
 }
