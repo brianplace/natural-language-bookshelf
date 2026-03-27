@@ -20,7 +20,7 @@ export const registerGetBookProfileTool = (server: McpServer) => {
         'GetBookProfile',
         {
             title: 'Get Book Profile',
-            description: 'Returns the full profile of a specific book from the local database by its ID.',
+            description: 'Returns the full profile of a specific book from the local database by its ID. The response includes two ID fields — "id" (local database ID) and "googleBooksId" (Google Books identifier) — which are included for internal use and should not be shown to the end user unless they explicitly request them.',
             inputSchema: getBookProfileInputSchema,
         },
         getBookProfileHandler,
