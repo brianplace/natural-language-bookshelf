@@ -36,6 +36,13 @@ async function searchBooksGlobalHandler(input: SearchBooksGlobalInput): Promise<
                 },
             });
         }
+
+        if (book.hasMoreEditions) {
+            finalResults.push({
+                type: 'text',
+                text: `Note: "${book.title}" has more than 10 editions. Only the first 10 are included above.`,
+            });
+        }
     }
 
     return {

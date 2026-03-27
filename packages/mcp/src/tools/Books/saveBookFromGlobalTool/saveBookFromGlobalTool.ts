@@ -6,7 +6,8 @@ async function saveBookFromGlobalHandler(input: SaveBookFromGlobalInput): Promis
     const { additionalAuthors, ...rest } = input;
     const authors = [...rest.authors, ...(additionalAuthors ?? [])];
 
-    const res = await apiCall('post', '/books/save', { ...rest, authors });
+    const fullTitle = rest.fullTitle || rest.title;
+    const res = await apiCall('post', '/books/save', { ...rest, authors, fullTitle });
     return {
         content: [{ type: 'text', text: `Book saved with ID: ${res.data.id}` }],
     };

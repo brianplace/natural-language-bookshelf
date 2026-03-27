@@ -25,6 +25,9 @@ import { registerSearchTemplatesTool } from './tools/Templates/searchTemplatesTo
 import { registerCloneTemplateTool } from './tools/Templates/cloneTemplateTool/cloneTemplateTool';
 import { registerGetImageTool } from './tools/Images/getImageTool/getImageTool';
 import { registerSearchBooksGlobalTool } from './tools/Books/searchBooksGlobalTool/searchBooksGlobalTool';
+import { registerGetEditionsFromGlobalSearchTool } from './tools/Books/getEditionsFromGlobalSearchTool/getEditionsFromGlobalSearchTool';
+import { registerGetBookProfileTool } from './tools/Books/getBookProfileTool/getBookProfileTool';
+import { registerSaveBookManuallyTool } from './tools/Books/saveBookManuallyTool/saveBookManuallyTool';
 
 const createServer = () => {
     const server = new McpServer({
@@ -43,18 +46,21 @@ const createServer = () => {
     registerSaveBookFromGlobalTool(server);
     registerAddToCollectionTool(server);
     registerGetCollectionTool(server);
+    registerGetEditionsFromGlobalSearchTool(server);
+    registerGetBookProfileTool(server);
+    registerSaveBookManuallyTool(server);
 
     // --- Shelves ---
-    // registerCreateShelfTool(server);
-    // registerListShelvesTool(server);
-    // registerRenameShelfTool(server);
-    // registerDeleteShelfTool(server);
-    // registerAddBookToShelfTool(server);
-    // registerRemoveBookFromShelfTool(server);
-    // registerMoveBookTool(server);
-    // registerMarkAsLentTool(server);
-    // registerMarkAsReturnedTool(server);
-    // registerListLentBooksTool(server);
+    registerCreateShelfTool(server);
+    registerListShelvesTool(server);
+    registerRenameShelfTool(server);
+    registerDeleteShelfTool(server);
+    registerAddBookToShelfTool(server);
+    registerRemoveBookFromShelfTool(server);
+    registerMoveBookTool(server);
+    registerMarkAsLentTool(server);
+    registerMarkAsReturnedTool(server);
+    registerListLentBooksTool(server);
 
     // // --- Templates ---
     // registerPublishShelfAsTemplateTool(server);
