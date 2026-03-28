@@ -1,13 +1,20 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp';
-import { apiCall, setToken } from '../../../api';
+import { setToken } from '../../../auth';
+import { login } from '../../../services/authService';
 import { loginInputSchema, LoginInput, LoginOutput } from './loginToolSchemas';
 
 async function loginHandler({ email, password }: LoginInput): Promise<LoginOutput> {
-    const res = await apiCall('post', '/auth/login', { email, password });
-    setToken(res.data.token);
-    return {
-        content: [{ type: 'text', text: 'Logged in successfully' }],
-    };
+    try {
+        const { token } = await login(email, password);
+        setToken(token);
+        return {
+            content: [{ type: 'text', text: 'Logged in successfully' }],
+        };
+    } catch (error: any) {
+        return {
+            content: [{ type: 'text', text: `Login failed: ${error.message}` }],
+        };
+    }
 }
 
 export const registerLoginTool = (server: McpServer) => {

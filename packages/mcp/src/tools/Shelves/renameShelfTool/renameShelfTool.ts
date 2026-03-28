@@ -1,12 +1,24 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp';
-import { apiCall } from '../../../api';
+import { getUserId } from '../../../auth';
+import { renameShelf } from '../../../services/shelfService';
 import { renameShelfInputSchema, RenameShelfInput, RenameShelfOutput } from './renameShelfToolSchemas';
 
 async function renameShelfHandler({ shelfId, name }: RenameShelfInput): Promise<RenameShelfOutput> {
-    const res = await apiCall('patch', `/shelves/${shelfId}`, { name });
-    return {
-        content: [{ type: 'text', text: `Shelf renamed to "${res.data.name}"` }],
-    };
+    let userId: string;
+    try {
+        userId = getUserId();
+    } catch (error: any) {
+        return { content: [{ type: 'text', text: error.message }] };
+    }
+
+    try {
+        const shelf = await renameShelf(userId, shelfId, name);
+        return {
+            content: [{ type: 'text', text: `Shelf renamed to "${shelf.name}"` }],
+        };
+    } catch (error: any) {
+        return { content: [{ type: 'text', text: `Error renaming shelf: ${error.message}` }] };
+    }
 }
 
 export const registerRenameShelfTool = (server: McpServer) => {

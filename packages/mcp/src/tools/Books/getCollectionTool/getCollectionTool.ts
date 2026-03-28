@@ -1,18 +1,29 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp';
-import { apiCall } from '../../../api';
+import { getUserId } from '../../../auth';
+import { getCollection } from '../../../services/bookService';
 import { getCollectionInputSchema, GetCollectionInput, GetCollectionOutput } from './getCollectionToolSchemas';
 
 async function getCollectionHandler(_input: GetCollectionInput): Promise<GetCollectionOutput> {
-    const res = await apiCall('get', '/books/collection', {});
+    let userId: string;
+    try {
+        userId = getUserId();
+    } catch (error: any) {
+        return { content: [{ type: 'text', text: error.message }] };
+    }
 
-    return {
-        content: [
-            {
-                type: 'text' as const,
-                text: JSON.stringify(res.data, null, 2),
-            },
-        ],
-    };
+    try {
+        const userBooks = await getCollection(userId);
+        return {
+            content: [
+                {
+                    type: 'text' as const,
+                    text: JSON.stringify(userBooks, null, 2),
+                },
+            ],
+        };
+    } catch (error: any) {
+        return { content: [{ type: 'text', text: `Error fetching collection: ${error.message}` }] };
+    }
 }
 
 export const registerGetCollectionTool = (server: McpServer) => {

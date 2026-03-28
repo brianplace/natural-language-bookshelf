@@ -1,18 +1,28 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp';
-import { apiCall } from '../../../api';
+import { getUserId } from '../../../auth';
+import { getBook } from '../../../services/bookService';
 import { getBookProfileInputSchema, GetBookProfileInput, GetBookProfileOutput } from './getBookProfileToolSchemas';
 
 async function getBookProfileHandler(input: GetBookProfileInput): Promise<GetBookProfileOutput> {
-    const res = await apiCall('get', `/books/${input.id}`, {});
+    try {
+        getUserId();
+    } catch (error: any) {
+        return { content: [{ type: 'text', text: error.message }] };
+    }
 
-    return {
-        content: [
-            {
-                type: 'text' as const,
-                text: JSON.stringify(res.data, null, 2),
-            },
-        ],
-    };
+    try {
+        const book = await getBook(input.id);
+        return {
+            content: [
+                {
+                    type: 'text' as const,
+                    text: JSON.stringify(book, null, 2),
+                },
+            ],
+        };
+    } catch (error: any) {
+        return { content: [{ type: 'text', text: `Error fetching book profile: ${error.message}` }] };
+    }
 }
 
 export const registerGetBookProfileTool = (server: McpServer) => {

@@ -1,12 +1,24 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp';
-import { apiCall } from '../../../api';
+import { getUserId } from '../../../auth';
+import { markAsReturned } from '../../../services/shelfService';
 import { markAsReturnedInputSchema, MarkAsReturnedInput, MarkAsReturnedOutput } from './markAsReturnedToolSchemas';
 
 async function markAsReturnedHandler({ shelfId, bookId }: MarkAsReturnedInput): Promise<MarkAsReturnedOutput> {
-    await apiCall('patch', `/shelves/${shelfId}/books/${bookId}/return`, {});
-    return {
-        content: [{ type: 'text', text: 'Book marked as returned.' }],
-    };
+    let userId: string;
+    try {
+        userId = getUserId();
+    } catch (error: any) {
+        return { content: [{ type: 'text', text: error.message }] };
+    }
+
+    try {
+        await markAsReturned(userId, shelfId, bookId);
+        return {
+            content: [{ type: 'text', text: 'Book marked as returned.' }],
+        };
+    } catch (error: any) {
+        return { content: [{ type: 'text', text: `Error marking book as returned: ${error.message}` }] };
+    }
 }
 
 export const registerMarkAsReturnedTool = (server: McpServer) => {

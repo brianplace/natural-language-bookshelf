@@ -1,16 +1,26 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp';
-import { apiCall } from '../../../api';
+import { getUserId } from '../../../auth';
+import { saveBook } from '../../../services/bookService';
 import { saveBookFromGlobalInputSchema, SaveBookFromGlobalInput, SaveBookFromGlobalOutput } from './saveBookFromGlobalToolSchemas';
 
 async function saveBookFromGlobalHandler(input: SaveBookFromGlobalInput): Promise<SaveBookFromGlobalOutput> {
-    const { additionalAuthors, ...rest } = input;
-    const authors = [...rest.authors, ...(additionalAuthors ?? [])];
+    try {
+        getUserId();
+    } catch (error: any) {
+        return { content: [{ type: 'text', text: error.message }] };
+    }
 
-    const fullTitle = rest.fullTitle || rest.title;
-    const res = await apiCall('post', '/books/save', { ...rest, authors, fullTitle });
-    return {
-        content: [{ type: 'text', text: `Book saved with ID: ${res.data.id}` }],
-    };
+    try {
+        const { additionalAuthors, ...rest } = input;
+        const authors = [...rest.authors, ...(additionalAuthors ?? [])];
+        const fullTitle = rest.fullTitle || rest.title;
+        const book = await saveBook({ ...rest, authors, fullTitle });
+        return {
+            content: [{ type: 'text', text: `Book saved with ID: ${book.id}` }],
+        };
+    } catch (error: any) {
+        return { content: [{ type: 'text', text: `Error saving book: ${error.message}` }] };
+    }
 }
 
 export const registerSaveBookFromGlobalTool = (server: McpServer) => {

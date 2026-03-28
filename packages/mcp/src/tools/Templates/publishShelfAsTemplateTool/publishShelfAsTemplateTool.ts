@@ -1,12 +1,24 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp';
-import { apiCall } from '../../../api';
+import { getUserId } from '../../../auth';
+import { publishTemplate } from '../../../services/templateService';
 import { publishShelfAsTemplateInputSchema, PublishShelfAsTemplateInput, PublishShelfAsTemplateOutput } from './publishShelfAsTemplateToolSchemas';
 
 async function publishShelfAsTemplateHandler({ shelfId }: PublishShelfAsTemplateInput): Promise<PublishShelfAsTemplateOutput> {
-    await apiCall('post', `/templates/${shelfId}/publish`);
-    return {
-        content: [{ type: 'text', text: 'Shelf published as template.' }],
-    };
+    let userId: string;
+    try {
+        userId = getUserId();
+    } catch (error: any) {
+        return { content: [{ type: 'text', text: error.message }] };
+    }
+
+    try {
+        await publishTemplate(userId, shelfId);
+        return {
+            content: [{ type: 'text', text: 'Shelf published as template.' }],
+        };
+    } catch (error: any) {
+        return { content: [{ type: 'text', text: `Error publishing template: ${error.message}` }] };
+    }
 }
 
 export const registerPublishShelfAsTemplateTool = (server: McpServer) => {

@@ -2,7 +2,6 @@ import 'dotenv/config';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import http from 'http';
-import { apiCall, setToken } from './api';
 import { registerLoginTool } from './tools/Auth/loginTool/loginTool';
 import { registerCreateNewAccountTool } from './tools/Auth/newAccountTool/createNewAccountTool';
 import { registerSearchBooksTool } from './tools/Books/searchBooksTool/searchBooksTool';

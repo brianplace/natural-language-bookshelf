@@ -1,5 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp';
-import { apiCall } from '../../../api';
+import { getUserId } from '../../../auth';
+import { getEditions } from '../../../services/bookService';
 import {
     getEditionsFromGlobalSearchInputSchema,
     GetEditionsFromGlobalSearchInput,
@@ -7,16 +8,25 @@ import {
 } from './getEditionsFromGlobalSearchToolSchemas';
 
 async function getEditionsFromGlobalSearchHandler(input: GetEditionsFromGlobalSearchInput): Promise<GetEditionsFromGlobalSearchOutput> {
-    const res = await apiCall('get', `/books/get-editions?openLibraryId=${encodeURIComponent(input.openLibraryId)}`, {});
+    try {
+        getUserId();
+    } catch (error: any) {
+        return { content: [{ type: 'text', text: error.message }] };
+    }
 
-    return {
-        content: [
-            {
-                type: 'text' as const,
-                text: JSON.stringify(res.data, null, 2),
-            },
-        ],
-    };
+    try {
+        const editions = await getEditions(input.openLibraryId);
+        return {
+            content: [
+                {
+                    type: 'text' as const,
+                    text: JSON.stringify(editions, null, 2),
+                },
+            ],
+        };
+    } catch (error: any) {
+        return { content: [{ type: 'text', text: `Error fetching editions: ${error.message}` }] };
+    }
 }
 
 export const registerGetEditionsFromGlobalSearchTool = (server: McpServer) => {
