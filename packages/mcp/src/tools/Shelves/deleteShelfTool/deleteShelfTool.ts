@@ -1,10 +1,22 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp';
-import { apiCall } from '../../../api';
+import { getUserId } from '../../../auth';
+import { deleteShelf } from '../../../services/shelfService';
 import { deleteShelfInputSchema, DeleteShelfInput, DeleteShelfOutput } from './deleteShelfToolSchemas';
 
 async function deleteShelfHandler({ shelfId }: DeleteShelfInput): Promise<DeleteShelfOutput> {
-    await apiCall('delete', `/shelves/${shelfId}`);
-    return { content: [{ type: 'text', text: 'Shelf deleted.' }] };
+    let userId: string;
+    try {
+        userId = getUserId();
+    } catch (error: any) {
+        return { content: [{ type: 'text', text: error.message }] };
+    }
+
+    try {
+        await deleteShelf(userId, shelfId);
+        return { content: [{ type: 'text', text: 'Shelf deleted.' }] };
+    } catch (error: any) {
+        return { content: [{ type: 'text', text: `Error deleting shelf: ${error.message}` }] };
+    }
 }
 
 export const registerDeleteShelfTool = (server: McpServer) => {

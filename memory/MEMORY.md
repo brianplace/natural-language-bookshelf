@@ -1,22 +1,22 @@
 # Bookshelf Project Memory
 
+## Workflow Preferences
+
+- [Always use feature branches](feedback_branching.md) — never commit directly to main
+
 ## MCP Server (packages/mcp)
 
-### Remote Access Setup
-- Uses `StreamableHTTPServerTransport` on port 3100 at `/mcp` endpoint (not SSE/stdio)
+### Transport Setup
+- Uses `StreamableHTTPServerTransport` on port 3100 at `/mcp` endpoint
 - A new `McpServer` instance must be created per connection — a single shared instance throws "Already connected to a transport"
 - The `createServer()` function in `index.ts` handles this
 
 ### Tool Structure
 - Each tool lives in its own folder: `tools/Category/toolName/`
   - `toolName.ts` — named handler function + `registerXxxTool(server)`
-  - `toolNameSchemas.ts` — input/output zod schemas with `.describe()`, input/output types
+  - `toolNameSchemas.ts` — Zod input/output schemas, input/output types
 - Output schemas are passed to `registerTool` via the `outputSchema` field
 
-## Feedback
+## Active Work
 
-- [feedback_branching.md](feedback_branching.md) — Always use feature branches, never commit directly to main
-
-## Known Issues
-
-- [project_ci_failures.md](project_ci_failures.md) — CI build failures in `packages/api` to fix
+- [MCP + API merge](project_mcp_api_merge.md) — branch `feature/merge-mcp-api`, unmerged; full session summary and next steps

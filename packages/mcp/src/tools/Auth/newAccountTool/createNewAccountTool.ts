@@ -1,33 +1,31 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp';
-import { apiCall, setToken } from '../../../api';
+import { setToken } from '../../../auth';
+import { register } from '../../../services/authService';
 import { createNewAccountInputSchema, CreateNewAccountInput, CreateNewAccountOutput, createNewAccountOutputType, createNewAccountOutputSchema, createNewAccountOutputResult } from './createNewAccountToolSchemas';
 
 async function createNewAccountHandler({ email, password }: CreateNewAccountInput): Promise<CreateNewAccountOutput> {
-    const res = await apiCall('post', '/auth/register', { email, password });
     const errorMessages: string[] = [];
     let token: string = '';
     let loggedIn: boolean = false;
 
-    if (res.data?.token) {
-        token = res.data.token;
-    } else {
-        errorMessages.push(...(res.errors ?? []));
-    }
-
-    if (token.length > 0) {
+    try {
+        const result = await register(email, password);
+        token = result.token;
         setToken(token);
         loggedIn = true;
+    } catch (error: any) {
+        errorMessages.push(error.message);
     }
 
     const resultingData: createNewAccountOutputType = {
         AccountCreated: token.length > 0,
         LoggedIn: loggedIn,
-        Errors: errorMessages
-    }
+        Errors: errorMessages,
+    };
 
     return {
         structuredContent: resultingData,
-        content: [{ type: 'text', text: JSON.stringify(resultingData, null, 2)}],
+        content: [{ type: 'text', text: JSON.stringify(resultingData, null, 2) }],
     };
 }
 

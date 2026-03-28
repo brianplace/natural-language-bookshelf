@@ -1,12 +1,24 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp';
-import { apiCall } from '../../../api';
+import { getUserId } from '../../../auth';
+import { createShelf } from '../../../services/shelfService';
 import { createShelfInputSchema, CreateShelfInput, CreateShelfOutput } from './createShelfToolSchemas';
 
 async function createShelfHandler({ name }: CreateShelfInput): Promise<CreateShelfOutput> {
-    const res = await apiCall('post', '/shelves', { name });
-    return {
-        content: [{ type: 'text', text: `Shelf "${res.data.name}" created with ID: ${res.data.id}` }],
-    };
+    let userId: string;
+    try {
+        userId = getUserId();
+    } catch (error: any) {
+        return { content: [{ type: 'text', text: error.message }] };
+    }
+
+    try {
+        const shelf = await createShelf(userId, name);
+        return {
+            content: [{ type: 'text', text: `Shelf "${shelf.name}" created with ID: ${shelf.id}` }],
+        };
+    } catch (error: any) {
+        return { content: [{ type: 'text', text: `Error creating shelf: ${error.message}` }] };
+    }
 }
 
 export const registerCreateShelfTool = (server: McpServer) => {

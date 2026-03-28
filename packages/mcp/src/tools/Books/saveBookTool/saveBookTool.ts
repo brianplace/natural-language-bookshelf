@@ -1,13 +1,24 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp';
-import { apiCall } from '../../../api';
+import { getUserId } from '../../../auth';
+import { saveBook } from '../../../services/bookService';
 import { saveBookInputSchema, SaveBookInput, SaveBookOutput } from './saveBookToolSchemas';
 
 async function saveBookHandler(bookData: SaveBookInput): Promise<SaveBookOutput> {
-    const fullTitle = bookData.fullTitle || bookData.title;
-    const res = await apiCall('post', '/books/save', { ...bookData, fullTitle });
-    return {
-        content: [{ type: 'text', text: `Book saved with ID: ${res.data.id}` }],
-    };
+    try {
+        getUserId();
+    } catch (error: any) {
+        return { content: [{ type: 'text', text: error.message }] };
+    }
+
+    try {
+        const fullTitle = bookData.fullTitle || bookData.title;
+        const book = await saveBook({ ...bookData, fullTitle });
+        return {
+            content: [{ type: 'text', text: `Book saved with ID: ${book.id}` }],
+        };
+    } catch (error: any) {
+        return { content: [{ type: 'text', text: `Error saving book: ${error.message}` }] };
+    }
 }
 
 export const registerSaveBookTool = (server: McpServer) => {

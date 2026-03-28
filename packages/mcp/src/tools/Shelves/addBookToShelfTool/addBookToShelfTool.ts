@@ -1,12 +1,24 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp';
-import { apiCall } from '../../../api';
+import { getUserId } from '../../../auth';
+import { addBookToShelf } from '../../../services/shelfService';
 import { addBookToShelfInputSchema, AddBookToShelfInput, AddBookToShelfOutput } from './addBookToShelfToolSchemas';
 
 async function addBookToShelfHandler({ shelfId, bookId }: AddBookToShelfInput): Promise<AddBookToShelfOutput> {
-    await apiCall('post', `/shelves/${shelfId}/books`, { bookId });
-    return {
-        content: [{ type: 'text', text: 'Book added to shelf.' }],
-    };
+    let userId: string;
+    try {
+        userId = getUserId();
+    } catch (error: any) {
+        return { content: [{ type: 'text', text: error.message }] };
+    }
+
+    try {
+        await addBookToShelf(userId, shelfId, bookId);
+        return {
+            content: [{ type: 'text', text: 'Book added to shelf.' }],
+        };
+    } catch (error: any) {
+        return { content: [{ type: 'text', text: `Error adding book to shelf: ${error.message}` }] };
+    }
 }
 
 export const registerAddBookToShelfTool = (server: McpServer) => {

@@ -1,14 +1,26 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp';
-import { apiCall } from '../../../api';
+import { getUserId } from '../../../auth';
+import { cloneTemplate } from '../../../services/templateService';
 import { cloneTemplateInputSchema, CloneTemplateInput, CloneTemplateOutput } from './cloneTemplateToolSchemas';
 
 async function cloneTemplateHandler({ shelfId }: CloneTemplateInput): Promise<CloneTemplateOutput> {
-    const res = await apiCall('post', `/templates/${shelfId}/clone`);
-    return {
-        content: [
-            { type: 'text', text: `Template cloned as shelf "${res.data.name}" (ID: ${res.data.id})` },
-        ],
-    };
+    let userId: string;
+    try {
+        userId = getUserId();
+    } catch (error: any) {
+        return { content: [{ type: 'text', text: error.message }] };
+    }
+
+    try {
+        const shelf = await cloneTemplate(userId, shelfId);
+        return {
+            content: [
+                { type: 'text', text: `Template cloned as shelf "${shelf.name}" (ID: ${shelf.id})` },
+            ],
+        };
+    } catch (error: any) {
+        return { content: [{ type: 'text', text: `Error cloning template: ${error.message}` }] };
+    }
 }
 
 export const registerCloneTemplateTool = (server: McpServer) => {

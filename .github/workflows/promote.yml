@@ -27,7 +27,7 @@ jobs:
       - run: pnpm install
 
       - name: Apply database migrations
-        run: pnpm --filter @bookshelf/api exec prisma migrate deploy
+        run: pnpm --filter mcp exec prisma migrate deploy
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
